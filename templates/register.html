@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css')}}">
+  <title>login/signup Form</title>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <div id="container">
+    <form class="box" id="signup-container" method="post">
+      <div class="heading">
+        Create Account
+      </div>
+      <div>
+        <p>Full name</p>
+        <input type="text" name="name" required>
+      </div>
+      <div>
+        <p>E-Mail</p>
+        <input type="text" name="email" required>
+      </div>
+      <div>
+        <p>Password</p>
+        <input type="password" name="pass" required>
+      </div>
+      <button class="btn">Create Account</button>
+      <div>
+        <span>Already have an account? </span>
+        <a href="{{ url_for('login')}}">Login here</a>
+      </div>
+
+    </form>
+  </div>
+  <script src="{{ url_for('static', filename='js/auth.js')}}"></script>
+</body>
+</html>
