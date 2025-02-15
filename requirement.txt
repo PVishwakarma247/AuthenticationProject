@@ -1,0 +1,6 @@
+flask
+pymongo
+random
+string
+werkzeug.security
+flask_mail

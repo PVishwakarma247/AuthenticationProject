@@ -7,11 +7,12 @@ app = Flask(__name__)
 app.static_folder = 'static'
 app.secret_key = "nobodyhere"
 
+# configuration of database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client['credentials']
 users_collection = db['loginUsers']
 
-# EMAIL CONFIGURATION FOR VERIFICATION MAIL
+# EMAIL CONFIGURATION FOR VERIFICATION OF EMAIL
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True # OR TLS
@@ -20,8 +21,6 @@ app.config['MAIL_DEFAULT_SENDER'] = 'priyanshuvishwakarma281@gmail.com'
 app.config['MAIL_PASSWORD'] = 'ytya oswe uxlr zxcz'
 mail = Mail(app)
 
-# app.config['SESSION_COOKIE_HTTPONLY'] = True
-# app.config['SESSION_COOKIE_SECURE']
 
 def generateOtp(length=4):
     return ''.join(random.choices(string.digits, k=length))
