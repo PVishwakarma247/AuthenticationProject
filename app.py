@@ -15,10 +15,10 @@ users_collection = db['loginUsers']
 # EMAIL CONFIGURATION FOR VERIFICATION OF EMAIL
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True # OR TLS
-app.config['MAIL_USERNAME'] = 'priyanshuvishwakarma281@gmail.com'
-app.config['MAIL_DEFAULT_SENDER'] = 'priyanshuvishwakarma281@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ytya oswe uxlr zxcz'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'emial@gmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = 'emial@gmail.com'
+app.config['MAIL_PASSWORD'] = 'password'
 mail = Mail(app)
 
 
@@ -26,7 +26,7 @@ def generateOtp(length=4):
     return ''.join(random.choices(string.digits, k=length))
 
 def sendVerificationEmail(email, otp):
-    msg = Message("Verify your Email", sender='priyanshuvishwakarma281@gmail.com', recipients=[email])
+    msg = Message("Verify your Email", sender='emial@gmail.com', recipients=[email])
     msg.body = f"Your Otp for email verification is: {otp}"
     try:
         mail.send(msg)
