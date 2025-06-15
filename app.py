@@ -1,24 +1,50 @@
 from flask import Flask, render_template, request, redirect, flash, session, url_for, get_flashed_messages
-import pymongo, random, string
+import random, string, os
+import mysql.connector
+from mysql.connector import Error
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_mail import Mail, Message
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.static_folder = 'static'
-app.secret_key = "nobodyhere"
+app.secret_key = os.getenv("KEY")
+load_dotenv()
 
 # configuration of database
-client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client['credentials']
-users_collection = db['loginUsers']
+def data_fetch_query(query, params=None, fetch=False):
+    cursor = None
+    db = None
+    try:
+        db = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='Root@123',
+            database='authentication',
+            port=3306
+        )
+        cursor = db.cursor(dictionary=True)
+        cursor.execute(query, params)
+        if fetch:
+            return cursor.fetchall()
+        db.commit()
+
+    except Error as e:
+        print(f"ERROR -> {e}")
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
 
 # EMAIL CONFIGURATION FOR VERIFICATION OF EMAIL
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'emial@gmail.com'
-app.config['MAIL_DEFAULT_SENDER'] = 'emial@gmail.com'
-app.config['MAIL_PASSWORD'] = 'password'
+app.config['MAIL_USERNAME'] = os.getenv("EMAIL")
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("EMAIL")
+app.config['MAIL_PASSWORD'] = os.getenv("EMAIL_PASS")
 mail = Mail(app)
 
 
@@ -26,7 +52,7 @@ def generateOtp(length=4):
     return ''.join(random.choices(string.digits, k=length))
 
 def sendVerificationEmail(email, otp):
-    msg = Message("Verify your Email", sender='emial@gmail.com', recipients=[email])
+    msg = Message("Verify your Email", sender=os.getenv("EMAIL"), recipients=[email])
     msg.body = f"Your Otp for email verification is: {otp}"
     try:
         mail.send(msg)
@@ -45,9 +71,13 @@ def login():
         if not(email.endswith('@gmail.com')):
             flash("Enter valid Mail", "danger")
             return render_template('login.html')
-        user = users_collection.find_one({"email": email})
+        query = "select * From users where 1=1 AND email = %s"
+        params = [email]
+        user = data_fetch_query(query, params, fetch=True)
         if user:
-            if check_password_hash(user['password'], password):
+            stored_password = user[0]['password']
+
+            if check_password_hash(stored_password, password):
                 session['email'] = email
                 flash("Login successful!", "success")
                 return redirect(url_for('dashboard'))
@@ -70,8 +100,10 @@ def register():
         if not(email.endswith('@gmail.com')):
             flash("Enter valid Mail", "danger")
             return render_template('register.html')
-
-        existing_user = users_collection.find_one({"email": email})
+        
+        query = "select * from users where 1=1 AND email = %s"
+        params = [email]
+        existing_user = data_fetch_query(query, params, fetch=True)
         if existing_user:
             flash("Email already registered! Try logging in.", "danger")
             return redirect(url_for('login'))
@@ -95,8 +127,10 @@ def dashboard():
         return redirect(url_for('login'))
     
     email = session.get('email')
-    user = users_collection.find_one({"email": email})
-    return render_template('dashboard.html', user = user['name'])
+    query = "SELECT * FROM users WHERE email = %s"
+    params = [email]
+    user = data_fetch_query(query, params, fetch=True)
+    return render_template('dashboard.html', user = user[0]['name'])
 
 @app.route('/logout')
 def logout():
@@ -124,11 +158,10 @@ def verify():
 
         if enteredOtp == otp:
             hashed_password = generate_password_hash(password)
-            users_collection.insert_one({
-                "name": name,
-                "email": email,
-                "password": hashed_password
-            })
+
+            query = "insert into users (name, email, password) values (%s, %s, %s)"
+            params = [name, email, hashed_password]
+            data_fetch_query(query, params)
 
             session.pop('name')
             session.pop('email')

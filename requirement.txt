@@ -1,6 +1,5 @@
-flask
-pymongo
-random
-string
-werkzeug.security
-flask_mail
+Flask==3.0.3
+mysql-connector-python==8.4.0
+flask-mail==0.9.1
+Werkzeug==3.0.1
+python-dotenv==1.0.1

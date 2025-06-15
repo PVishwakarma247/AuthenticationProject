@@ -1,24 +1,44 @@
-# Flask Authentication System
+# 🔐 Flask Authentication System (MySQL)
 
-This is a simple authentication system built using Python and Flask. It provides user registration, login, Database, and session management functionalities.
+A secure user authentication system built using **Flask** and **MySQL**. It supports user registration, login, session handling, and password hashing. Email functionality is included using **Flask-Mail**, and sensitive configuration is managed through environment variables.
 
-## Features
+---
 
-- **User Registration**: Users can create an account by providing a username, email, and password.
-- **User Login**: Registered users can log in using their credentials.
-- **Session Management**: Users remain logged in across sessions using Flask-Login.
-- **Password Hashing**: Passwords are securely hashed using `werkzeug.security` before being stored in the database.
+## ✅ Features
 
-## Requirements
+- 📝 **User Registration** – Create accounts with name, email, and password.
+- 🔐 **User Login** – Login with secure credential validation.
+- 🔄 **Session Management** – Persistent user sessions with Flask.
+- 🛡️ **Password Hashing** – Secure password storage using `werkzeug.security`.
+- 📧 **Email Notifications** – Send email using `Flask-Mail`.
+- ⚙️ **MySQL Database Integration** – Store and retrieve user data.
+- 🔑 **Environment Variable Support** – Use `.env` to manage secrets securely.
+
+---
+
+## 📦 Requirements
 
 - Python 3.7+
 - Flask
-- Flask-Login
-- pymongo
-- werkzeug.security
+- mysql-connector-python
+- Flask-Mail
+- Werkzeug
+- python-dotenv
+
+---
 
 ## Installation
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/PVishwakarma/AuthenticationProject.git
+
+2. install dependencies:
+   ```bash
+   pip install -r requirement.txt
+
+3. configure .env file:
+   ```bash
+   EMAIL=email@gnail.com
+   EMAIL_PASS=password
+   KEY=secret_key
